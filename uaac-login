@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 shopt -s expand_aliases
 
 alias uaac='BUNDLE_GEMFILE=/home/tempest-web/tempest/web/vendor/uaac/Gemfile bundle exec uaac'
@@ -17,3 +19,5 @@ uaac target https://localhost/uaa --ca-cert /var/tempest/workspaces/default/root
 uaac token owner get opsman $OPSMAN_USER -p $OPSMAN_PASS -s ''
 
 export UAA_ACCESS_TOKEN=$(uaac context $OPSMAN_USER | grep access_token | awk '{ print $2 }')
+
+"UAA_ACCESS_TOKEN exported!"
