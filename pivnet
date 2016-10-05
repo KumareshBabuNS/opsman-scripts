@@ -8,7 +8,7 @@ cmd=$1
 
 usage_and_exit() {
   cat <<EOF >&2
-Usage: opsman <command> [options]
+Usage: pivnet <command> [options]
 Examples:
   pivnet login
   pivnet download https://network.pivotal.io/.../product_files/7509/download
