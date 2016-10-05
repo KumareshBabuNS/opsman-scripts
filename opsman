@@ -7,7 +7,7 @@ shopt -s expand_aliases
 alias uaac='BUNDLE_GEMFILE=/home/tempest-web/tempest/web/vendor/uaac/Gemfile bundle exec uaac'
 
 usage_and_exit() {
-  cat <<EOF >&2
+  cat <<EOF | tee error_and_exit
 Usage: opsman <command> [options]
 Examples:
   opsman login
@@ -16,8 +16,7 @@ EOF
 }
 
 error_and_exit() {
-  echo $1 >&2
-  exit 1
+  echo $1 >&2 && exit 1
 }
 
 login_to_uaac() {
