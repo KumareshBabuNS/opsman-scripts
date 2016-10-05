@@ -5,13 +5,11 @@ shopt -s expand_aliases
 alias uaac='BUNDLE_GEMFILE=/home/tempest-web/tempest/web/vendor/uaac/Gemfile bundle exec uaac'
 
 if [ -z "$OPSMAN_USER" ]; then
-  echo "Ops Manager User: "
-  read -r OPSMAN_USER
+  read -p "Ops Manager User: " OPSMAN_USER
 fi
 
 if [ -z "$OPSMAN_PASS" ]; then
-  echo "Ops Manager Pass: "
-  read -r OPSMAN_PASS
+  read -rs -p "Ops Manager Pass: " OPSMAN_PASS
 fi
 
 uaac target https://localhost/uaa --ca-cert /var/tempest/workspaces/default/root_ca_certificate
