@@ -6,13 +6,6 @@ shopt -s expand_aliases
 
 alias uaac='BUNDLE_GEMFILE=/home/tempest-web/tempest/web/vendor/uaac/Gemfile bundle exec uaac'
 
-# TODO: grab these from .opsmanrc ?
-OPSMAN_USER=admin
-CLIENT_ID=opsman
-CLIENT_SECRET=
-
-cmd=$1
-
 usage_and_exit() {
   cat <<EOF >&2
 Usage: opsman <command> [options]
@@ -27,36 +20,46 @@ error_and_exit() {
   exit 1
 }
 
+login_to_uaac() {
+  read -p "Ops Manager User: " local OPSMAN_USER
+  read -rs -p "Ops Manager Pass: " local OPSMAN_PASS
+
+  uaac target https://localhost/uaa --ca-cert /var/tempest/workspaces/default/root_ca_certificate
+
+  uaac token owner get opsman $OPSMAN_USER -p $OPSMAN_PASS -s ''
+
+  echo "User $OPSMAN_USER logged in successfully."
+}
+
 is_valid_access_token() {
-  local accessToken=$1
+  local UAA_ACCESS_TOKEN=$1
 
-  [ -n "$accessToken" ] || return 1
+  [ -n "$UAA_ACCESS_TOKEN" ] || return 1
 
-  local statusCode=$(curl http://localhost/uaa/check_token -k -L -G \
+  local STATUS_CODE=$(curl http://localhost/uaa/check_token -k -L -G \
     -s -o /dev/null -w "%{http_code}" \
     -u "$CLIENT_ID:$CLIENT_SECRET" \
     -d token_type=bearer \
-    -d token="$accessToken")
+    -d token="$UAA_ACCESS_TOKEN")
 
-    [ "200" = "$statusCode" ]
+    [ "200" = "$STATUS_CODE" ]
 }
 
 upload_to_opsman() {
-  if [ -z "$1" ]; then
+  local LOCAL_FILE_NAME=$1
+  if [ -z "$LOCAL_FILE_NAME" ]; then
     read -r -p "Local file name: " LOCAL_FILE_NAME
-  else
-    LOCAL_FILE_NAME=$1
   fi
 
   if [ ! -f "$LOCAL_FILE_NAME" ]; then
     error_and_exit "Invalid file: $LOCAL_FILE_NAME"
   fi
 
-  UAA_ACCESS_TOKEN=$(uaac context $OPSMAN_USER | grep access_token | awk '{ print $2 }')
+  local UAA_ACCESS_TOKEN=$(uaac context | grep access_token | awk '{ print $2 }')
 
   if [ ! is_valid_access_token ]; then
-    uaac-login
-    UAA_ACCESS_TOKEN=$(uaac context $OPSMAN_USER | grep access_token | awk '{ print $2 }')
+    login_to_uaac
+    UAA_ACCESS_TOKEN=$(uaac context | grep access_token | awk '{ print $2 }')
   fi
 
   curl "https://localhost/api/v0/available_products" \
@@ -66,10 +69,14 @@ upload_to_opsman() {
     -F "product[file]=@$LOCAL_FILE_NAME"
 }
 
-if [ "login" = "$cmd" ]; then
-  uaac-login
-elif [ "upload" = "$cmd" ]; then
-  upload_to_opsman $2
+CMD=$1 ARG=$2
+
+if [ "login" = "$CMD" ]; then
+  login_to_uaac
+elif [ "upload" = "$CMD" ]; then
+  upload_to_opsman $ARG
 else
   usage_and_exit
 fi
+
+echo "LOCAL_FILE_NAME=$LOCAL_FILE_NAME"
