@@ -34,9 +34,9 @@ is_valid_access_token() {
 
 if [ "upload" = "$cmd" ]; then
   pivnet-upload $2
-elif [ "download" = $cmd ]; then
+elif [ "download" = "$cmd" ]; then
   pivnet-download $2
-elif [ "login" ]; then
+elif [ "login" = "$cmd" ]; then
   uaac-login
 else
   print_usage
