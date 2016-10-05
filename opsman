@@ -41,10 +41,35 @@ is_valid_access_token() {
     [ "200" = "$statusCode" ]
 }
 
+upload_to_opsman() {
+  if [ -z "$1" ]; then
+    read -r -p "Local file name: " LOCAL_FILE_NAME
+  else
+    LOCAL_FILE_NAME=$1
+  fi
+
+  if [ ! -f "$LOCAL_FILE_NAME" ]; then
+    error_and_exit "Invalid file: $LOCAL_FILE_NAME"
+  fi
+
+  UAA_ACCESS_TOKEN=$(uaac context $OPSMAN_USER | grep access_token | awk '{ print $2 }')
+
+  if [ ! is_valid_access_token ]; then
+    uaac-login
+    UAA_ACCESS_TOKEN=$(uaac context $OPSMAN_USER | grep access_token | awk '{ print $2 }')
+  fi
+
+  curl "https://localhost/api/v0/available_products" \
+    -k -# -o /dev/null \
+    -X POST \
+    -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
+    -F "product[file]=@$LOCAL_FILE_NAME"
+}
+
 if [ "login" = "$cmd" ]; then
   uaac-login
 elif [ "upload" = "$cmd" ]; then
-  pivnet-upload $2
+  upload_to_opsman $2
 else
   usage_and_exit
 fi
