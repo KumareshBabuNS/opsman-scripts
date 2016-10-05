@@ -13,6 +13,13 @@ CLIENT_SECRET=
 
 cmd=$1
 
+print_usage() {
+  echo "Usage: opsman <command> [options]"
+  echo "Examples:"
+  echo "  opsman login"
+  echo "  opsman upload cf-1.8.5-build.4.pivotal"
+}
+
 error_and_exit() {
   echo $1 >&2
   exit 1
@@ -34,8 +41,6 @@ is_valid_access_token() {
 
 if [ "upload" = "$cmd" ]; then
   pivnet-upload $2
-elif [ "download" = "$cmd" ]; then
-  pivnet-download $2
 elif [ "login" = "$cmd" ]; then
   uaac-login
 else
