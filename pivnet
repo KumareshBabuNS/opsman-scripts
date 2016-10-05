@@ -2,12 +2,8 @@
 
 set -e
 
-shopt -s expand_aliases
-
-cmd=$1
-
 usage_and_exit() {
-  cat <<EOF >&2
+  cat <<EOF | tee error_and_exit
 Usage: pivnet <command> [options]
 Examples:
   pivnet login
@@ -16,14 +12,37 @@ EOF
 }
 
 error_and_exit() {
-  echo $1 >&2
-  exit 1
+  echo $1 >&2 && exit 1
 }
 
-if [ "login" = "$cmd" ]; then
+download_from_pivnet() {
+  local DOWNLOAD_URL=$1
+
+  if [ -z "$PIVNET_TOKEN" ]; then
+    read -r -p "Pivnet API Token: " PIVNET_TOKEN
+  fi
+
+  if [ -z "$DOWNLOAD_URL" ]; then
+    read -r -p "Remote file URL: " DOWNLOAD_URL
+  fi
+
+  # Get the filename from the redirect
+  FILENAME=$(curl -s --data '' -D- -o /dev/null -H "Authorization: Token $PIVNET_TOKEN" $DOWNLOAD_URL | grep -o -E 'filename=.*$' | sed -e 's/filename=//' | sed 's/\r$//')
+
+  echo "Downloading $FILENAME from $DOWNLOAD_URL"
+
+  curl -o $FILENAME \
+    -L --data '' \
+    -H "Authorization: Token $PIVNET_TOKEN" \
+    $DOWNLOAD_URL
+}
+
+CMD=$1 ARG=$2
+
+if [ "login" = "$CMD" ]; then
   error_and_exit "login not implemented yet"
-elif [ "download" = "$cmd" ]; then
-  pivnet-download $2
+elif [ "download" = "$CMD" ]; then
+  download_from_pivnet $ARG
 else
   usage_and_exit
 fi
