@@ -71,9 +71,13 @@ fi
 # Login to UAA if we don't have a valid token
 UAA_ACCESS_TOKEN=$(uaac context $OPSMAN_USER | grep access_token | awk '{ print $2 }')
 
-[ ! $(which uaac-loginx) ] && echo "Cannot find 'uaac-login'. Please install it from opsman-scripts!"
+if [ ! $(which uaac-login) ]; then
+  error_and_exit "Cannot find 'uaac-login'. Please install it from opsman-scripts!"
+fi
 
-[ ! is_valid_access_token ] && uaac-login
+if [ ! is_valid_access_token ]; then
+  uaac-login
+fi
 
 curl "https://localhost/api/v0/available_products" \
   -k -# -o /dev/null \
