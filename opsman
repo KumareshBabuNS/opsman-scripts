@@ -78,5 +78,3 @@ elif [ "upload" = "$CMD" ]; then
 else
   usage_and_exit
 fi
-
-echo "LOCAL_FILE_NAME=$LOCAL_FILE_NAME"
