@@ -38,7 +38,7 @@ is_valid_access_token() {
 
   local STATUS_CODE=$(curl http://localhost/uaa/check_token -k -L -G \
     -s -o /dev/null -w "%{http_code}" \
-    -u "$CLIENT_ID:$CLIENT_SECRET" \
+    -u "opsman:" \
     -d token_type=bearer \
     -d token="$UAA_ACCESS_TOKEN")
 
@@ -57,10 +57,8 @@ upload_to_opsman() {
 
   local UAA_ACCESS_TOKEN=$(uaac context | grep access_token | awk '{ print $2 }')
 
-  if [ ! is_valid_access_token "$UAA_ACCESS_TOKEN" ]; then
-    error_and_exit "Invalid UAA Access Token. Run `opsman login` to login to UAA."
-    #login_to_uaac
-    #UAA_ACCESS_TOKEN=$(uaac context | grep access_token | awk '{ print $2 }')
+  if ! is_valid_access_token "$UAA_ACCESS_TOKEN"; then
+    error_and_exit "Invalid UAA Access Token. Run 'opsman login' to login to UAA."
   fi
 
   curl "https://localhost/api/v0/available_products" \
