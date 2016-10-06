@@ -23,7 +23,7 @@ login_to_uaac() {
   read -p "Ops Manager User: " local OPSMAN_USER
   read -rs -p "Ops Manager Pass: " local OPSMAN_PASS
 
-  uaac target https://localhost/uaa --ca-cert /var/tempest/workspaces/default/root_ca_certificate
+  uaac target https://localhost/uaa --skip-ssl-validation
 
   uaac token owner get opsman $OPSMAN_USER -p $OPSMAN_PASS -s ''
 
