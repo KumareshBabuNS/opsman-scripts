@@ -31,10 +31,11 @@ set_token() {
 }
 
 download_from_pivnet() {
+  local PIVNET_API_TOKEN=
   local DOWNLOAD_URL=$1
 
   if [ -z "$PIVNET_API_TOKEN" ]; then
-    read -r -p "Pivnet API Token: " local PIVNET_API_TOKEN
+    read -r -p "Pivnet API Token: " PIVNET_API_TOKEN
   fi
 
   if [ -z "$DOWNLOAD_URL" ]; then
