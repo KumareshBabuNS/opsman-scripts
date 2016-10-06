@@ -21,7 +21,10 @@ error_and_exit() {
 }
 
 login_to_uaac() {
+  local OPSMAN_USER=
   read -r -p "Ops Manager User: " OPSMAN_USER
+
+  local OPSMAN_PASS=
   read -r -s -p "Ops Manager Pass: " OPSMAN_PASS
 
   uaac target https://localhost/uaa --skip-ssl-validation
@@ -33,7 +36,6 @@ login_to_uaac() {
 
 is_valid_access_token() {
   local UAA_ACCESS_TOKEN=$1
-
   [ -n "$UAA_ACCESS_TOKEN" ] || return 1
 
   local STATUS_CODE=$(curl http://localhost/uaa/check_token -k -L -G \
