@@ -20,8 +20,8 @@ error_and_exit() {
 }
 
 login_to_uaac() {
-  read -p "Ops Manager User: " local OPSMAN_USER
-  read -rs -p "Ops Manager Pass: " local OPSMAN_PASS
+  read -r -p "Ops Manager User: " local OPSMAN_USER
+  read -r -s -p "Ops Manager Pass: " local OPSMAN_PASS
 
   uaac target https://localhost/uaa --skip-ssl-validation
 
