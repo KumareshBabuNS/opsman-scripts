@@ -10,16 +10,17 @@ fi
 set -e
 
 usage_and_exit() {
-  cat <<EOF | tee error_and_exit
+  cat <<EOF
 Usage: pivnet <command> [options]
 Examples:
   pivnet token SAMPLEaJimQVTq2zWBYZ
   pivnet download https://network.pivotal.io/.../product_files/7509/download
 EOF
+  exit 1
 }
 
 error_and_exit() {
-  echo $1 >&2 && exit 1
+  echo "$1" && exit 1
 }
 
 set_token() {
