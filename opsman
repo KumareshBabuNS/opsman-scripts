@@ -20,12 +20,12 @@ error_and_exit() {
 }
 
 login_to_uaac() {
-  read -r -p "Ops Manager User: " local OPSMAN_USER
-  read -r -s -p "Ops Manager Pass: " local OPSMAN_PASS
+  read -r -p "Ops Manager User: " OPSMAN_USER
+  read -r -s -p "Ops Manager Pass: " OPSMAN_PASS
 
   uaac target https://localhost/uaa --skip-ssl-validation
 
-  uaac token owner get opsman $OPSMAN_USER -p $OPSMAN_PASS -s ''
+  echo "uaac token owner get opsman $OPSMAN_USER -p $OPSMAN_PASS -s ''"
 
   echo "User $OPSMAN_USER logged in successfully."
 }
